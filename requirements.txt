@@ -1,0 +1,4 @@
+nltk==3.7
+phonecodes==1.1.1
+https://github.com/kpu/kenlm/archive/master.zip
+git+https://github.com/chrislit/abydos.git
