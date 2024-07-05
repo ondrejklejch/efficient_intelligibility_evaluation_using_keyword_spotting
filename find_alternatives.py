@@ -69,12 +69,30 @@ def main(arpa_path, similar_words_path, text_path, output_path):
         scores = []
         if words[i] not in similar_words:
           continue
+
+        if words[i] in stop_words:
+          continue
   
-        if len(words[i]) <= 3:
+        # We don't want to use short words as keywords
+        if len(words[i]) <= 4:
+          continue
+
+        # We don't want to use contractions as keywords
+        if "'" in words[i]:
+          continue
+
+        # We don't want to to select words that appear multiple times in a sentence
+        if len([w for w in words if w == words[i]]) > 1:
           continue
   
         for w in similar_words[words[i]]:
           if w in stop_words:
+            continue
+
+          if "'" in w:
+            continue
+
+          if len(w) <= 4:
             continue
 
           if are_words_too_similar(words[i], w):
