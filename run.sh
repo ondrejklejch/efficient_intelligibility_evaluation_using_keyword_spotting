@@ -7,6 +7,7 @@ lexicon_path='assets/cmudict.dict'
 arpa_path='assets/4gram_small.arpa.gz'
 input_path='input.txt'
 ngram_overlap_path='ngram_overlap.txt'
+ngram_overlap_filtered_path='ngram_overlap_filtered.txt'
 similar_words_path='similar_words.txt'
 output_path='output.txt'
 
@@ -25,11 +26,16 @@ if [ $stage -le 0 ]; then
 fi
 
 if [ $stage -le 1 ]; then
-  echo Mining similar words
-  python3 prepare_similar_words.py $lexicon_path $arpa_path $ngram_overlap_path $similar_words_path
+  echo Filtering sentences
+  python3 filter.py $ngram_overlap_path $ngram_overlap_filtered_path
 fi
 
 if [ $stage -le 2 ]; then
+  echo Mining similar words
+  python3 prepare_similar_words.py $lexicon_path $arpa_path $ngram_overlap_filtered_path $similar_words_path
+fi
+
+if [ $stage -le 3 ]; then
   echo Selecting alternative words
-  python3 find_alternatives.py $arpa_path $similar_words_path $ngram_overlap_path $output_path
+  python3 find_alternatives.py $arpa_path $similar_words_path $ngram_overlap_filtered_path $output_path
 fi
