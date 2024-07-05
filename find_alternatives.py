@@ -41,14 +41,14 @@ def load_similar_words(path):
 def score_sentence(model, s):
   return sum(prob for prob, _, _ in model.full_scores(s))
 
-def print_solution(lm_score, name, sentence, words, solution, f_out):
+def print_solution(lm_score, name, sentence, words, ppl, solution, f_out):
   if solution is None:
     return
   
   i = solution[0]
   ref = ' '.join(words[1:i] + ['*%s*' % words[i]] + words[i+1:-1])
   print(lm_score, name, sentence, file=f_out)
-  print('ref: ', ref, file=f_out)
+  print(f'ref: {ref} ({ppl:.2f})', file=f_out)
   for k, (w, s) in enumerate(solution[1]):
     sen = ' '.join(words[1:i] + ['*%s*' % w] + words[i+1:-1])
     print('  %d: %s (%.2f)' % (k, sen, s), file=f_out)
@@ -102,7 +102,8 @@ def main(arpa_path, similar_words_path, text_path, output_path):
           best_score = word_score
           solution = (i, sorted_scores[:4])
       
-      print_solution(lm_score, name, sentence, words, solution, f_out)
+      ppl = score_sentence(model, ' '.join(words))
+      print_solution(lm_score, name, sentence, words, ppl, solution, f_out)
 
 if __name__ == '__main__':
   arpa_path = sys.argv[1]
